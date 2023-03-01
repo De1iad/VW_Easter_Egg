@@ -1,7 +1,7 @@
 # 42Wolfsburg_VW_EasterEgg
 This Project applies the use of fast fourier transform algorithm to transform audio samples from Sound file (.wav) to frequency spectrum which are mapped to output variables to control the lights of a car.
 
-##Create_Light_File
+## Create Light File
 This program will create a file for use in the car_demo program in the vw_play folder.
 
 ## How to run
