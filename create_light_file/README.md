@@ -2,7 +2,7 @@
 This Project applies the use of fast fourier transform algorithm to transform audio samples from Sound file (.wav) to frequency spectrum which are mapped to output variables to control the lights of a car.
 
 ## Create Light File
-This program will create a file containing light variables for use in the car_demo program in the vw_play folder.
+This program will create a file containing light variables for use in the car_demo program in the vw_play folder. Requires a .wav file as input.
 
 ## How to run
 Run ```bash install.sh``` to install all the requirements.
