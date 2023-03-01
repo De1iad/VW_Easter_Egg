@@ -6,11 +6,11 @@
 #    By: obibby <obibby@student.42wolfsburg.de>     +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/01/06 20:17:58 by libacchu          #+#    #+#              #
-#    Updated: 2023/03/01 20:37:20 by obibby           ###   ########.fr        #
+#    Updated: 2023/03/01 21:49:13 by obibby           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-NAME	=	write_file
+NAME	=	create_file
 OBJ_DIR =	obj/
 SRC_DIR =	src/
 SRC		=	transform.c WavLib.c FftLib.c output_to_file.c
