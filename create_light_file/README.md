@@ -7,4 +7,4 @@ This program will create a file for use in the car_demo program in the vw_play f
 ## How to run
 Run ```bash install.sh``` to install all the requirements.
 Run ```Make``` to create the executable.
-Run ```./write_file``` to run the program.
+Run ```./create_file``` to run the program.
