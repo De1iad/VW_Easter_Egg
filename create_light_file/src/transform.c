@@ -11,7 +11,7 @@
 #include "../inc/EasterEgg.h"
 #include <sys/time.h>
 
-# define WAVFILE ("./quantumania.wav")
+//# define WAVFILE ("./quantumania.wav")
 
 inputsEE EasterEggLightsEE;
 
@@ -207,28 +207,38 @@ void	set_light_variables(tstSampleBufferDouble *sample_freqs, t_light_freqs *fre
 		EasterEggLightsEE.FrontLights = 0;
 
 	// fog lights
-	if (sample_freqs->dStereoL[freqs->Fog_Lights] > max_amp[freqs->Fog_Lights] / 7)
+	if (sample_freqs->dStereoL[freqs->Fog_Lights] > max_amp[freqs->Fog_Lights] / 5)
 	{
 		EasterEggLightsEE.FogLights = 1;
 		EasterEggLightsEE.FogLightsPWM = 1000 * (sample_freqs->dStereoL[freqs->Fog_Lights] / max_amp[freqs->Fog_Lights]);
 	}
-	else if (sample_freqs->dStereoR[freqs->Fog_Lights] > max_amp[freqs->Fog_Lights] / 7)
+	else if (sample_freqs->dStereoR[freqs->Fog_Lights] > max_amp[freqs->Fog_Lights] / 5)
 	{
 		EasterEggLightsEE.FogLights = 1;
 		EasterEggLightsEE.FogLightsPWM = 1000 * (sample_freqs->dStereoR[freqs->Fog_Lights] / max_amp[freqs->Fog_Lights]);
 	}
 	else
-		EasterEggLightsEE.FogLights = 0;
+	{
+		if (EasterEggLightsEE.FogLightsPWM)
+		{
+			if (EasterEggLightsEE.FogLightsPWM < 10)
+				EasterEggLightsEE.FogLightsPWM = 0;
+			else
+				EasterEggLightsEE.FogLightsPWM -= 10;
+		}
+		else
+			EasterEggLightsEE.FogLights = 0;
+	}
 
 	// parking lights
-	if (sample_freqs->dStereoL[73] > max_amp[73] / 7)
+	if (sample_freqs->dStereoL[73] > max_amp[73] / 5)
 	{
 		EasterEggLightsEE.ParkingLightLeft = 1;
 		EasterEggLightsEE.ParkingLightLeftPWM = 1000 * (sample_freqs->dStereoL[73] / max_amp[73]);
 		EasterEggLightsEE.ParkingLightRight = 1;
 		EasterEggLightsEE.ParkingLightRightPWM = 1000 * (sample_freqs->dStereoL[73] / max_amp[73]);
 	}
-	else if (sample_freqs->dStereoR[73] > max_amp[73] / 7)
+	else if (sample_freqs->dStereoR[73] > max_amp[73] / 5)
 	{
 		EasterEggLightsEE.ParkingLightLeft = 1;
 		EasterEggLightsEE.ParkingLightLeftPWM = 1000 * (sample_freqs->dStereoR[73] / max_amp[73]);
@@ -237,8 +247,24 @@ void	set_light_variables(tstSampleBufferDouble *sample_freqs, t_light_freqs *fre
 	}
 	else
 	{
-		EasterEggLightsEE.ParkingLightLeft = 0;
-		EasterEggLightsEE.ParkingLightRight = 0;
+		if (EasterEggLightsEE.ParkingLightLeftPWM)
+		{
+			if (EasterEggLightsEE.ParkingLightLeftPWM < 10)
+			{
+				EasterEggLightsEE.ParkingLightLeftPWM = 0;
+				EasterEggLightsEE.ParkingLightRightPWM = 0;
+			}
+			else
+			{
+				EasterEggLightsEE.ParkingLightLeftPWM -= 10;
+				EasterEggLightsEE.ParkingLightRightPWM -= 10;
+			}
+		}
+		else
+		{
+			EasterEggLightsEE.ParkingLightLeft = 0;
+			EasterEggLightsEE.ParkingLightRight = 0;			
+		}
 	}
 
 	// blink lights
@@ -272,8 +298,24 @@ void	set_light_variables(tstSampleBufferDouble *sample_freqs, t_light_freqs *fre
 	}
 	else
 	{
-		EasterEggLightsEE.BlinkLightLeft = 0;
-		EasterEggLightsEE.BlinkLightRight = 0;
+		if (EasterEggLightsEE.BlinkLightLeftPWM)
+		{
+			if (EasterEggLightsEE.BlinkLightLeftPWM < 10)
+			{
+				EasterEggLightsEE.BlinkLightLeftPWM = 0;
+				EasterEggLightsEE.BlinkLightRightPWM = 0;				
+			}
+			else
+			{
+				EasterEggLightsEE.BlinkLightLeftPWM -= 10;
+				EasterEggLightsEE.BlinkLightRightPWM -= 10;
+			}
+		}
+		else
+		{
+			EasterEggLightsEE.BlinkLightLeft = 0;
+			EasterEggLightsEE.BlinkLightRight = 0;
+		}
 	}
 
 	// brake lights
@@ -288,7 +330,17 @@ void	set_light_variables(tstSampleBufferDouble *sample_freqs, t_light_freqs *fre
 		EasterEggLightsEE.BrakeLightsPWM = 1000 * (sample_freqs->dStereoR[2365] / max_amp[2365]);
 	}
 	else
-		EasterEggLightsEE.BrakeLights = 0;
+	{
+		if (EasterEggLightsEE.BrakeLightsPWM)
+		{
+			if (EasterEggLightsEE.BrakeLightsPWM < 10)
+				EasterEggLightsEE.BrakeLightsPWM = 0;
+			else
+				EasterEggLightsEE.BrakeLightsPWM -= 10;
+		}
+		else
+			EasterEggLightsEE.BrakeLights = 0;
+	}
 
 	// ambient lights
 	if (sample_freqs->dStereoL[freqs->Ambient_Lights] > max_amp[freqs->Ambient_Lights] / 5)
@@ -302,7 +354,17 @@ void	set_light_variables(tstSampleBufferDouble *sample_freqs, t_light_freqs *fre
 		EasterEggLightsEE.AmbientLightsPWM = 1000 * (sample_freqs->dStereoR[freqs->Ambient_Lights] / max_amp[freqs->Ambient_Lights]);
 	}
 	else
-		EasterEggLightsEE.AmbientLights = 0;
+	{
+		if (EasterEggLightsEE.AmbientLightsPWM > 0)
+		{
+			if (EasterEggLightsEE.AmbientLightsPWM < 10)
+				EasterEggLightsEE.AmbientLightsPWM = 0;
+			else
+				EasterEggLightsEE.AmbientLightsPWM -= 10;
+		}
+		else
+			EasterEggLightsEE.AmbientLights = 0;
+	}
 	
 	// license lights 1-2
 	if (sample_freqs->dStereoL[freqs->License_Light1] > max_amp[freqs->License_Light1] / 5)
@@ -322,8 +384,24 @@ void	set_light_variables(tstSampleBufferDouble *sample_freqs, t_light_freqs *fre
 	}
 	else
 	{
-		EasterEggLightsEE.LicensePlateLight1 = 0;
-		EasterEggLightsEE.LicensePlateLight2 = 0;
+		if (EasterEggLightsEE.LicensePlateLight1PWM > 0)
+		{
+			if (EasterEggLightsEE.LicensePlateLight1PWM < 10)
+			{
+				EasterEggLightsEE.LicensePlateLight1PWM = 0;
+				EasterEggLightsEE.LicensePlateLight2PWM = 0;
+			}
+			else
+			{
+				EasterEggLightsEE.LicensePlateLight1PWM -= 10;
+				EasterEggLightsEE.LicensePlateLight2PWM -= 10;
+			}
+		}
+		else
+		{
+			EasterEggLightsEE.LicensePlateLight1 = 0;
+			EasterEggLightsEE.LicensePlateLight2 = 0;
+		}	
 	}
 
 	// license lights 3-4
@@ -344,8 +422,24 @@ void	set_light_variables(tstSampleBufferDouble *sample_freqs, t_light_freqs *fre
 	}
 	else
 	{
-		EasterEggLightsEE.LicensePlateLight3 = 0;
-		EasterEggLightsEE.LicensePlateLight4 = 0;
+		if (EasterEggLightsEE.LicensePlateLight3PWM)
+		{
+			if (EasterEggLightsEE.LicensePlateLight3PWM < 10)
+			{
+				EasterEggLightsEE.LicensePlateLight3PWM = 0;
+				EasterEggLightsEE.LicensePlateLight4PWM = 0;
+			}
+			else
+			{
+				EasterEggLightsEE.LicensePlateLight3PWM -= 10;
+				EasterEggLightsEE.LicensePlateLight4PWM -= 10;
+			}
+		}
+		else
+		{
+			EasterEggLightsEE.LicensePlateLight3 = 0;
+			EasterEggLightsEE.LicensePlateLight4 = 0;
+		}
 	}
 
 	// reverse lights
@@ -360,7 +454,17 @@ void	set_light_variables(tstSampleBufferDouble *sample_freqs, t_light_freqs *fre
 		EasterEggLightsEE.ReverseLightsPWM = 1000 * (sample_freqs->dStereoR[freqs->Reverse_Lights] / max_amp[freqs->Reverse_Lights]);
 	}
 	else
-		EasterEggLightsEE.ReverseLights = 0;
+	{
+		if (EasterEggLightsEE.ReverseLightsPWM)
+		{
+			if (EasterEggLightsEE.ReverseLightsPWM < 10)
+				EasterEggLightsEE.ReverseLightsPWM = 0;
+			else
+				EasterEggLightsEE.ReverseLightsPWM -= 10;
+		}
+		else
+			EasterEggLightsEE.ReverseLights = 0;
+	}
 }
 
 void	*transform_loop(void *info_void)
@@ -408,7 +512,7 @@ int transform(t_info *info)
     memset((void *)&info->wav.wavReadConfig, 0, (sizeof(tstWavReadConfig)));
 
     /* Load wav file */
-    info->wav.wavStream = fopen(WAVFILE, "rb");
+    info->wav.wavStream = fopen(info->input, "rb");
     if (info->wav.wavStream == NULL)
     {
         printf("Error open file, %d\n", wavReturnCode);
@@ -523,10 +627,16 @@ double **get_averages(tstSampleBufferDouble *sample_freqs)
 	return (averages);
 }
 
-int	main()
+int	main(int argc, char *argv[])
 {
 	t_info	info;
 
+	if (argc != 2)
+	{
+		printf("Usage: ./create_file <source.wav>\n");
+		return (1);
+	}
+	info.input = argv[1];
 	info.output = fopen("lights", "w+");
 	transform(&info);
 	fetch_amp_range(&info);
@@ -535,4 +645,5 @@ int	main()
 	transform_loop(&info);
 	fclose(info.wav.wavStream);
 	fclose(info.output);
+	return (0);
 }

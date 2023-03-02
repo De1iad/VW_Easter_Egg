@@ -39,7 +39,7 @@ void	put_fps(t_car *car)
 int	light_loop(t_car *car)
 {
 	car->current_time = get_time_in_ms();
-	if (car->current_time - car->previous_time >= 50)
+	if (car->current_time - car->previous_time >= 10)
 	{	
 		//EasterEgg_Cyclic_10ms();
 		brake_lights(car);

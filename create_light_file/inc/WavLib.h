@@ -273,6 +273,7 @@ typedef struct s_wav
 typedef struct s_info
 {
 	t_wav	wav;
+	char	*input;
 	FILE	*output;
 	double max_amp[22050];
 } t_info;
