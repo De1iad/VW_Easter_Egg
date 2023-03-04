@@ -6,7 +6,7 @@
 #    By: obibby <obibby@student.42wolfsburg.de>     +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/01/06 20:17:58 by libacchu          #+#    #+#              #
-#    Updated: 2023/03/01 20:04:14 by obibby           ###   ########.fr        #
+#    Updated: 2023/03/04 12:39:51 by obibby           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -22,9 +22,8 @@ ifeq ($(SYS), Linux)
 	LIBMLX	=	./minilibx_linux/
 else
 	SRC		+=	mac/mac_utils.c mac/lights_main.c mac/lights_fog.c mac/lights_indicator.c mac/lights_interior.c mac/lights_parking.c mac/lights_brake.c mac/lights_license.c
-	LIBS    =	-Lminilibx_mms -lmlx -framework OpenGL -framework AppKit -lm -lpthread -lSDL2
-	LIBMLX	=	./minilibx_mms/
-	COPY	=	cp minilibx_mms/libmlx.dylib .
+	LIBS    =	-Lminilibx_opengl -lmlx -framework OpenGL -framework AppKit -lm -lpthread -lSDL2
+	LIBMLX	=	./minilibx_opengl/
 endif
 SRCS	=	$(addprefix $(SRC_DIR), $(SRC))
 OBJ		=	$(SRCS:%.c=$(OBJ_DIR)%.o)
@@ -46,7 +45,6 @@ $(OBJ_DIR)%.o : %.c
 $(NAME) : $(OBJ) $(INC)
 	@printf "\n"
 	@make -C $(LIBMLX)
-	@$(COPY)
 	@printf "$(RESET)\r$(GREY)Compiling $(BLUE)$(NAME)$(DEFLT)\n"
 	@$(CC) $(CFLAGS) $(OBJ) -o $(NAME) $(LIBS)
 
