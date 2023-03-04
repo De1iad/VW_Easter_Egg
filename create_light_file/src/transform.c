@@ -182,6 +182,25 @@ void	auto_assign_freqs(t_light_freqs *freqs, double *max_amp)
 // 	printf("license lights 3-4: %dhz\n", freqs->License_Light3);
 // }
 
+int	check_average(tstSampleBufferDouble * sample_freqs, double *max_amp, int start, int end)
+{
+	double	average;
+	double	max_avg;
+	
+	average = 0;
+	max_avg = 0;
+	for (int i = start; i <= end; i++)
+	{
+		average += sample_freqs->dStereoL[i];
+		average += sample_freqs->dStereoR[i];
+		max_avg += max_amp[i];
+	}
+	average = average / (end + 1 - start);
+	max_avg = max_avg / (end + 1 - start);
+	if (average > max_avg * 0.55)
+		return (1);
+	return (0);
+}
 
 void	set_light_variables(tstSampleBufferDouble *sample_freqs, t_light_freqs *freqs, double *max_amp)
 {
@@ -199,7 +218,7 @@ void	set_light_variables(tstSampleBufferDouble *sample_freqs, t_light_freqs *fre
 	// }
 
 	// headlights
-	if (sample_freqs->dStereoL[freqs->Front_Lights] > max_amp[freqs->Front_Lights] / 3 || sample_freqs->dStereoR[freqs->Front_Lights] > max_amp[freqs->Front_Lights] / 3 ||  sample_freqs->dStereoL[622] > max_amp[622] / 3 || sample_freqs->dStereoR[622] > max_amp[622] / 3)
+	if (check_average(sample_freqs, max_amp, 51, 56))
 	{
 		EasterEggLightsEE.FrontLights = 1;
 	}
