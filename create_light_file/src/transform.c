@@ -483,7 +483,10 @@ void	*transform_loop(void *info_void)
 															&info->wav.wavSampleBufferHex,
 															wavSpec);
 			if (retval == WAVLIB_EOF)
+			{
+				output_to_file(WAVLIB_EOF, info);
 				return (NULL);
+			}
 			WAVLIB_ConvertSampleBufferToFloatByChannel(
 														&info->wav.wavSampleBufferHex,
 														&info->wav.wavSampleBufferFloatInp,
@@ -493,9 +496,9 @@ void	*transform_loop(void *info_void)
 														&info->wav.wavSampleBufferFreq,
 														&info->wav.wavReadConfig);
 			set_light_variables(&info->wav.wavSampleBufferFreq, &freqs, info->max_amp);
-			output_to_file(info->output);
-			info->wav.wavReadConfig.u32FileSeekPosL -= (info->wav.wavReadConfig.u32Offset * (44100 - 441));
-			info->wav.wavReadConfig.u32FileSeekPosR -= (info->wav.wavReadConfig.u32Offset * (44100 - 441));
+			output_to_file(0, info);
+			info->wav.wavReadConfig.u32FileSeekPosL -= (info->wav.wavReadConfig.u32Offset * (44100 - 4410));
+			info->wav.wavReadConfig.u32FileSeekPosR -= (info->wav.wavReadConfig.u32Offset * (44100 - 4410));
 	}
 	return (NULL);
 }
@@ -584,8 +587,8 @@ void fetch_amp_range(t_info *info)
 		        info->max_amp[x] = info->wav.wavSampleBufferFreq.dStereoR[x];
 		    }
 		}
-		info->wav.wavReadConfig.u32FileSeekPosL -= (info->wav.wavReadConfig.u32Offset * (44100 - 441));
-		info->wav.wavReadConfig.u32FileSeekPosR -= (info->wav.wavReadConfig.u32Offset * (44100 - 441));
+		info->wav.wavReadConfig.u32FileSeekPosL -= (info->wav.wavReadConfig.u32Offset * (44100 - 4410));
+		info->wav.wavReadConfig.u32FileSeekPosR -= (info->wav.wavReadConfig.u32Offset * (44100 - 4410));
 	}
 	printf("loops: %ld\n", i);
 	printf("done\n");
@@ -637,13 +640,13 @@ int	main(int argc, char *argv[])
 		return (1);
 	}
 	info.input = argv[1];
-	info.output = fopen("lights", "w+");
+	//info.output = fopen("lights", "w+");
 	transform(&info);
 	fetch_amp_range(&info);
 	fclose(info.wav.wavStream);
 	transform(&info);
 	transform_loop(&info);
 	fclose(info.wav.wavStream);
-	fclose(info.output);
+	// fclose(info.output);
 	return (0);
 }

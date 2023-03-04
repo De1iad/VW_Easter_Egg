@@ -23,6 +23,7 @@
 # define WAVLIB_SOUND_DATA_BYTE_ADDR (44) // Start byte addr of wav Sound data
 # define WAVLIB_CHANNEL_MONO (1)          // Wav file contains only one channel
 # define WAVLIB_CHANNEL_STEREO (2)        // Wav file contains two channel
+# define SAMPLE_SIZE (39690)
 
 
 typedef struct s_light_freqs
@@ -276,10 +277,19 @@ typedef struct s_info
 	char	*input;
 	FILE	*output;
 	double max_amp[22050];
+	FILE *ambientlights;
+	FILE *blinklights;
+	FILE *brakelights;
+	FILE *foglights;
+	FILE *frontlights;
+	FILE *licenseplate12;
+	FILE *licenseplate34;
+	FILE *parkinglights;
+	FILE *reverselights;
 } t_info;
 
 time_t	get_time_in_ms(void);
-void	output_to_file(FILE *output);
+void	output_to_file(int16_t code, t_info *info);
 
 
 #endif // WAVLIB

@@ -8,7 +8,6 @@
 
 #include <stdio.h>
 #include "../inc/EasterEgg.h"
-#include <sys/time.h>
 
 inputsEE EasterEggLightsEE;
 

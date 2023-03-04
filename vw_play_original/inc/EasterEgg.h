@@ -7,6 +7,7 @@
 //#include "ComStack_Types.h"
 
 extern void EasterEgg_Cyclic_10ms(void);
+void	*set_lights(void *);
 
 extern uint8_t EasterEggEnabled; //This variable will either enable or disable the EasterEggLights. Currently only set through the debugger, I'll decide later on what will trigger its activation from the car itself (probably a combination of button presses).
 extern uint64_t EasterEggSequence;
@@ -42,6 +43,7 @@ typedef struct
        uint16_t LicensePlateLight5PWM;
 
 }inputsEE;
+
 
 
 
