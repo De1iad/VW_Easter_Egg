@@ -54,7 +54,7 @@ void	auto_assign_freqs(t_light_freqs *freqs, double *max_amp)
 	}
 	//printf("front lights: %dhz\n", freqs->Front_Lights);
 	magnitude = 0;
-	for (int i = 10; i < 50; i++)
+	for (int i = 10; i < 100; i++)
 	{
 		if (max_amp[i] > magnitude)
 		{
@@ -218,7 +218,7 @@ void	set_light_variables(tstSampleBufferDouble *sample_freqs, t_light_freqs *fre
 	// }
 
 	// headlights
-	if (check_average(sample_freqs, max_amp, 51, 56))
+	if (check_average(sample_freqs, max_amp, 53, 57))
 	{
 		EasterEggLightsEE.FrontLights = 1;
 	}
@@ -226,12 +226,12 @@ void	set_light_variables(tstSampleBufferDouble *sample_freqs, t_light_freqs *fre
 		EasterEggLightsEE.FrontLights = 0;
 
 	// fog lights
-	if (sample_freqs->dStereoL[freqs->Fog_Lights] > max_amp[freqs->Fog_Lights] / 5)
+	if (sample_freqs->dStereoL[freqs->Fog_Lights] > max_amp[freqs->Fog_Lights] / 3)
 	{
 		EasterEggLightsEE.FogLights = 1;
 		EasterEggLightsEE.FogLightsPWM = 1000 * (sample_freqs->dStereoL[freqs->Fog_Lights] / max_amp[freqs->Fog_Lights]);
 	}
-	else if (sample_freqs->dStereoR[freqs->Fog_Lights] > max_amp[freqs->Fog_Lights] / 5)
+	else if (sample_freqs->dStereoR[freqs->Fog_Lights] > max_amp[freqs->Fog_Lights] / 3)
 	{
 		EasterEggLightsEE.FogLights = 1;
 		EasterEggLightsEE.FogLightsPWM = 1000 * (sample_freqs->dStereoR[freqs->Fog_Lights] / max_amp[freqs->Fog_Lights]);
@@ -240,10 +240,10 @@ void	set_light_variables(tstSampleBufferDouble *sample_freqs, t_light_freqs *fre
 	{
 		if (EasterEggLightsEE.FogLightsPWM)
 		{
-			if (EasterEggLightsEE.FogLightsPWM < 10)
+			if (EasterEggLightsEE.FogLightsPWM < 100)
 				EasterEggLightsEE.FogLightsPWM = 0;
 			else
-				EasterEggLightsEE.FogLightsPWM -= 10;
+				EasterEggLightsEE.FogLightsPWM -= 100;
 		}
 		else
 			EasterEggLightsEE.FogLights = 0;
@@ -268,15 +268,15 @@ void	set_light_variables(tstSampleBufferDouble *sample_freqs, t_light_freqs *fre
 	{
 		if (EasterEggLightsEE.ParkingLightLeftPWM)
 		{
-			if (EasterEggLightsEE.ParkingLightLeftPWM < 10)
+			if (EasterEggLightsEE.ParkingLightLeftPWM < 100)
 			{
 				EasterEggLightsEE.ParkingLightLeftPWM = 0;
 				EasterEggLightsEE.ParkingLightRightPWM = 0;
 			}
 			else
 			{
-				EasterEggLightsEE.ParkingLightLeftPWM -= 10;
-				EasterEggLightsEE.ParkingLightRightPWM -= 10;
+				EasterEggLightsEE.ParkingLightLeftPWM -= 100;
+				EasterEggLightsEE.ParkingLightRightPWM -= 100;
 			}
 		}
 		else
@@ -319,15 +319,15 @@ void	set_light_variables(tstSampleBufferDouble *sample_freqs, t_light_freqs *fre
 	{
 		if (EasterEggLightsEE.BlinkLightLeftPWM)
 		{
-			if (EasterEggLightsEE.BlinkLightLeftPWM < 10)
+			if (EasterEggLightsEE.BlinkLightLeftPWM < 100)
 			{
 				EasterEggLightsEE.BlinkLightLeftPWM = 0;
 				EasterEggLightsEE.BlinkLightRightPWM = 0;				
 			}
 			else
 			{
-				EasterEggLightsEE.BlinkLightLeftPWM -= 10;
-				EasterEggLightsEE.BlinkLightRightPWM -= 10;
+				EasterEggLightsEE.BlinkLightLeftPWM -= 100;
+				EasterEggLightsEE.BlinkLightRightPWM -= 100;
 			}
 		}
 		else
@@ -352,10 +352,10 @@ void	set_light_variables(tstSampleBufferDouble *sample_freqs, t_light_freqs *fre
 	{
 		if (EasterEggLightsEE.BrakeLightsPWM)
 		{
-			if (EasterEggLightsEE.BrakeLightsPWM < 10)
+			if (EasterEggLightsEE.BrakeLightsPWM < 100)
 				EasterEggLightsEE.BrakeLightsPWM = 0;
 			else
-				EasterEggLightsEE.BrakeLightsPWM -= 10;
+				EasterEggLightsEE.BrakeLightsPWM -= 100;
 		}
 		else
 			EasterEggLightsEE.BrakeLights = 0;
@@ -376,10 +376,10 @@ void	set_light_variables(tstSampleBufferDouble *sample_freqs, t_light_freqs *fre
 	{
 		if (EasterEggLightsEE.AmbientLightsPWM > 0)
 		{
-			if (EasterEggLightsEE.AmbientLightsPWM < 10)
+			if (EasterEggLightsEE.AmbientLightsPWM < 100)
 				EasterEggLightsEE.AmbientLightsPWM = 0;
 			else
-				EasterEggLightsEE.AmbientLightsPWM -= 10;
+				EasterEggLightsEE.AmbientLightsPWM -= 100;
 		}
 		else
 			EasterEggLightsEE.AmbientLights = 0;
@@ -405,15 +405,15 @@ void	set_light_variables(tstSampleBufferDouble *sample_freqs, t_light_freqs *fre
 	{
 		if (EasterEggLightsEE.LicensePlateLight1PWM > 0)
 		{
-			if (EasterEggLightsEE.LicensePlateLight1PWM < 10)
+			if (EasterEggLightsEE.LicensePlateLight1PWM < 100)
 			{
 				EasterEggLightsEE.LicensePlateLight1PWM = 0;
 				EasterEggLightsEE.LicensePlateLight2PWM = 0;
 			}
 			else
 			{
-				EasterEggLightsEE.LicensePlateLight1PWM -= 10;
-				EasterEggLightsEE.LicensePlateLight2PWM -= 10;
+				EasterEggLightsEE.LicensePlateLight1PWM -= 100;
+				EasterEggLightsEE.LicensePlateLight2PWM -= 100;
 			}
 		}
 		else
@@ -443,15 +443,15 @@ void	set_light_variables(tstSampleBufferDouble *sample_freqs, t_light_freqs *fre
 	{
 		if (EasterEggLightsEE.LicensePlateLight3PWM)
 		{
-			if (EasterEggLightsEE.LicensePlateLight3PWM < 10)
+			if (EasterEggLightsEE.LicensePlateLight3PWM < 100)
 			{
 				EasterEggLightsEE.LicensePlateLight3PWM = 0;
 				EasterEggLightsEE.LicensePlateLight4PWM = 0;
 			}
 			else
 			{
-				EasterEggLightsEE.LicensePlateLight3PWM -= 10;
-				EasterEggLightsEE.LicensePlateLight4PWM -= 10;
+				EasterEggLightsEE.LicensePlateLight3PWM -= 100;
+				EasterEggLightsEE.LicensePlateLight4PWM -= 100;
 			}
 		}
 		else
@@ -476,10 +476,10 @@ void	set_light_variables(tstSampleBufferDouble *sample_freqs, t_light_freqs *fre
 	{
 		if (EasterEggLightsEE.ReverseLightsPWM)
 		{
-			if (EasterEggLightsEE.ReverseLightsPWM < 10)
+			if (EasterEggLightsEE.ReverseLightsPWM < 100)
 				EasterEggLightsEE.ReverseLightsPWM = 0;
 			else
-				EasterEggLightsEE.ReverseLightsPWM -= 10;
+				EasterEggLightsEE.ReverseLightsPWM -= 100;
 		}
 		else
 			EasterEggLightsEE.ReverseLights = 0;
