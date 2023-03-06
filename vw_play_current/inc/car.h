@@ -6,7 +6,7 @@
 /*   By: obibby <obibby@student.42wolfsburg.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/27 16:03:35 by obibby            #+#    #+#             */
-/*   Updated: 2023/03/01 20:02:06 by obibby           ###   ########.fr       */
+/*   Updated: 2023/03/06 09:03:53 by obibby           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,6 +91,7 @@ void	interior(t_car *car);
 void	parking_lights(t_car *car);
 void	brake_lights(t_car *car);
 void	license_plate(t_car *car);
+void	reverse_lights(t_car *car);
 
 void	*make_image(void *mlx);
 int 	ft_free(t_car *car);

@@ -49,6 +49,7 @@ int	light_loop(t_car *car)
 		parking_lights(car);
 		interior(car);
 		license_plate(car);
+		reverse_lights(car);
 		mlx_put_image_to_window(car->mlx, car->window, car->image.img, 0, 0);
 		mlx_put_image_to_window(car->mlx, car->window, car->alpha_image.img, 0, 0);
 		put_fps(car);

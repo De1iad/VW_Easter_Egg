@@ -106,7 +106,7 @@ void	auto_assign_freqs(t_light_freqs *freqs, double *max_amp)
 	}
 	//printf("license lights 3-4: %dhz\n", freqs->License_Light3);
 	magnitude = 0;
-	for (int i = 5000; i < 5500; i++)
+	for (int i = 90; i < 94; i++)
 	{
 		if (max_amp[i] > magnitude)
 		{
