@@ -6,7 +6,7 @@
 /*   By: obibby <obibby@student.42wolfsburg.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/01 14:02:43 by obibby            #+#    #+#             */
-/*   Updated: 2023/03/04 11:29:59 by obibby           ###   ########.fr       */
+/*   Updated: 2023/03/07 09:01:29 by obibby           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ void	put_hex(FILE *output, int num)
 		buff[i] = "0123456789ABCDEF"[num % 16];
 		num = num / 16;
 	}
-	buff[4] = 0;
+	buff[3] = 0;
 	fputs(buff, output);
 }
 

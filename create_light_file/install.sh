@@ -1,4 +1,5 @@
 #!/bin/sh
+
 GREEN='\033[0;32m'
 RESET='\033[0m'
 os="$(uname -s)"
