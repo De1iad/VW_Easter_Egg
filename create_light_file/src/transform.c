@@ -182,43 +182,59 @@ void	auto_assign_freqs(t_light_freqs *freqs, double *max_amp)
 // 	printf("license lights 3-4: %dhz\n", freqs->License_Light3);
 // }
 
-int	check_average(tstSampleBufferDouble * sample_freqs, double *max_amp, int start, int end)
+int	check_average(tstSampleBufferDouble * sample_freqs, double *max_amp, int start, int end, double *max_avg, double *freq_avg, double sens)
 {
-	double	average;
-	double	max_avg;
-	
-	average = 0;
-	max_avg = 0;
+	*freq_avg = 0;
+	*max_avg = 0;
 	for (int i = start; i <= end; i++)
 	{
-		average += sample_freqs->dStereoL[i];
-		average += sample_freqs->dStereoR[i];
-		max_avg += max_amp[i];
+		if (sample_freqs->dStereoL[i] > sample_freqs->dStereoR[i])
+			*freq_avg += sample_freqs->dStereoL[i];
+		else
+			*freq_avg += sample_freqs->dStereoR[i];
+		*max_avg += max_amp[i];
 	}
-	average = average / (end + 1 - start);
-	max_avg = max_avg / (end + 1 - start);
-	if (average > max_avg * 0.55)
+	*freq_avg = *freq_avg / (end + 1 - start);
+	*max_avg = *max_avg / (end + 1 - start);
+	if (*freq_avg > *max_avg * sens)
+		return (1);
+	return (0);
+}
+
+int	check_average_few(tstSampleBufferDouble * sample_freqs, double *max_amp, int one, int two, int three, double *max_avg, double *freq_avg, double sens)
+{
+	*freq_avg = 0;
+	*max_avg = 0;
+	if (sample_freqs->dStereoL[one] > sample_freqs->dStereoR[one])
+		*freq_avg += sample_freqs->dStereoL[one];
+	else
+		*freq_avg += sample_freqs->dStereoR[one];
+	if (sample_freqs->dStereoL[two] > sample_freqs->dStereoR[two])
+		*freq_avg += sample_freqs->dStereoL[two];
+	else
+		*freq_avg += sample_freqs->dStereoR[two];
+	if (sample_freqs->dStereoL[three] > sample_freqs->dStereoR[three])
+		*freq_avg += sample_freqs->dStereoL[three];
+	else
+		*freq_avg += sample_freqs->dStereoR[three];
+	*max_avg += max_amp[one];
+	*max_avg += max_amp[two];
+	*max_avg += max_amp[three];
+	*freq_avg = *freq_avg / 3;
+	*max_avg = *max_avg / 3;
+	if (*freq_avg > *max_avg * sens)
 		return (1);
 	return (0);
 }
 
 void	set_light_variables(tstSampleBufferDouble *sample_freqs, t_light_freqs *freqs, double *max_amp)
 {
-	// double **averages = get_averages(sample_freqs);
-	// for (int i = 0; i < 19; i++)
-	// 	printf("freq range %d-%d: %f\n", i * 8, (i + 1) * 8, averages[0][i]);
-	// free(averages);
-
-	//printf("%f / 7 = %f, current freq L: %f, current freq R: %f\n", max_amp[freqs->Front_Lights], max_amp[freqs->Front_Lights] / 7, sample_freqs->dStereoL[freqs->Front_Lights], sample_freqs->dStereoR[freqs->Front_Lights]);
-	//printf("timestamp: %ld\n", get_time_in_ms());
-	// for (int i = 0; i < 22050; i++)
-	// {
-	// 	if ((sample_freqs->dStereoL[i] > 1000) || (sample_freqs->dStereoR[i] > 1000))
-	// 		printf("freq %d, left: %f, right: %f, max_amp: %f\n", i, sample_freqs->dStereoL[i], sample_freqs->dStereoR[i], max_amp[i]);
-	// }
-
+	double	max_avg;
+	double	freq_avg;
 	// headlights
-	if (check_average(sample_freqs, max_amp, 53, 57))
+	//if (check_average(sample_freqs, max_amp, 95, 113, &max_avg, &freq_avg, 0.7)) // start freqs 109-113 + 64-66
+	//if (sample_freqs->dStereoL[120] > max_amp[120] * 0.4 || sample_freqs->dStereoR[120] > max_amp[120] * 0.4) // 120
+	if (check_average_few(sample_freqs, max_amp, 150, 120, 144, &max_avg, &freq_avg, 0.4)) // 75, 81, 82, 106, 261, 440?, 522?, 
 	{
 		EasterEggLightsEE.FrontLights = 1;
 	}
@@ -226,15 +242,15 @@ void	set_light_variables(tstSampleBufferDouble *sample_freqs, t_light_freqs *fre
 		EasterEggLightsEE.FrontLights = 0;
 
 	// fog lights
-	if (sample_freqs->dStereoL[freqs->Fog_Lights] > max_amp[freqs->Fog_Lights] / 3)
+	if (check_average_few(sample_freqs, max_amp, 112, 222, 130, &max_avg, &freq_avg, 0.4))
 	{
 		EasterEggLightsEE.FogLights = 1;
-		EasterEggLightsEE.FogLightsPWM = 1000 * (sample_freqs->dStereoL[freqs->Fog_Lights] / max_amp[freqs->Fog_Lights]);
+		EasterEggLightsEE.FogLightsPWM = 1000 * (freq_avg / max_avg);
 	}
-	else if (sample_freqs->dStereoR[freqs->Fog_Lights] > max_amp[freqs->Fog_Lights] / 3)
+	else if (check_average_few(sample_freqs, max_amp, 98, 249, 370, &max_avg, &freq_avg, 0.4))
 	{
 		EasterEggLightsEE.FogLights = 1;
-		EasterEggLightsEE.FogLightsPWM = 1000 * (sample_freqs->dStereoR[freqs->Fog_Lights] / max_amp[freqs->Fog_Lights]);
+		EasterEggLightsEE.FogLightsPWM = 1000 * (freq_avg / max_avg);
 	}
 	else
 	{
@@ -250,19 +266,19 @@ void	set_light_variables(tstSampleBufferDouble *sample_freqs, t_light_freqs *fre
 	}
 
 	// parking lights
-	if (sample_freqs->dStereoL[73] > max_amp[73] / 5)
+	if (check_average_few(sample_freqs, max_amp, 64, 131, 195, &max_avg, &freq_avg, 0.4))
 	{
 		EasterEggLightsEE.ParkingLightLeft = 1;
-		EasterEggLightsEE.ParkingLightLeftPWM = 1000 * (sample_freqs->dStereoL[73] / max_amp[73]);
+		EasterEggLightsEE.ParkingLightLeftPWM = 1000 * (freq_avg / max_avg);
 		EasterEggLightsEE.ParkingLightRight = 1;
-		EasterEggLightsEE.ParkingLightRightPWM = 1000 * (sample_freqs->dStereoL[73] / max_amp[73]);
+		EasterEggLightsEE.ParkingLightRightPWM = EasterEggLightsEE.ParkingLightLeftPWM;
 	}
-	else if (sample_freqs->dStereoR[73] > max_amp[73] / 5)
+	else if (check_average_few(sample_freqs, max_amp, 86, 167, 220, &max_avg, &freq_avg, 0.4))
 	{
 		EasterEggLightsEE.ParkingLightLeft = 1;
-		EasterEggLightsEE.ParkingLightLeftPWM = 1000 * (sample_freqs->dStereoR[73] / max_amp[73]);
+		EasterEggLightsEE.ParkingLightLeftPWM = 1000 * (freq_avg / max_avg);
 		EasterEggLightsEE.ParkingLightRight = 1;
-		EasterEggLightsEE.ParkingLightRightPWM = 1000 * (sample_freqs->dStereoR[73] / max_amp[73]);
+		EasterEggLightsEE.ParkingLightRightPWM = EasterEggLightsEE.ParkingLightLeftPWM;
 	}
 	else
 	{
@@ -287,33 +303,20 @@ void	set_light_variables(tstSampleBufferDouble *sample_freqs, t_light_freqs *fre
 	}
 
 	// blink lights
-	if (sample_freqs->dStereoL[freqs->Blink_Lights] > max_amp[freqs->Blink_Lights] / 5) // old: sample_freqs->dStereoL[876] > max_amp[876] / 7
+	//if (sample_freqs->dStereoL[freqs->Blink_Lights] > max_amp[freqs->Blink_Lights] / 5)
+	if (check_average(sample_freqs, max_amp, 79, 94, &max_avg, &freq_avg, 0.5))
 	{
 		EasterEggLightsEE.BlinkLightLeft = 1;
-		EasterEggLightsEE.BlinkLightLeftPWM = 1000 * (sample_freqs->dStereoL[freqs->Blink_Lights] / max_amp[freqs->Blink_Lights]);
+		EasterEggLightsEE.BlinkLightLeftPWM = 1000 * (freq_avg / max_avg);
 		EasterEggLightsEE.BlinkLightRight = 1;
-		EasterEggLightsEE.BlinkLightRightPWM = 1000 * (sample_freqs->dStereoL[freqs->Blink_Lights] / max_amp[freqs->Blink_Lights]);
+		EasterEggLightsEE.BlinkLightRightPWM = EasterEggLightsEE.BlinkLightLeftPWM;
 	}
-	else if (sample_freqs->dStereoR[freqs->Blink_Lights] > max_amp[freqs->Blink_Lights] / 5)
+	else if (check_average(sample_freqs, max_amp, 58, 73, &max_avg, &freq_avg, 0.5))
 	{
 		EasterEggLightsEE.BlinkLightLeft = 1;
-		EasterEggLightsEE.BlinkLightLeftPWM = 1000 * (sample_freqs->dStereoR[freqs->Blink_Lights] / max_amp[freqs->Blink_Lights]);
+		EasterEggLightsEE.BlinkLightLeftPWM = 1000 * (freq_avg / max_avg);
 		EasterEggLightsEE.BlinkLightRight = 1;
-		EasterEggLightsEE.BlinkLightRightPWM = 1000 * (sample_freqs->dStereoR[freqs->Blink_Lights] / max_amp[freqs->Blink_Lights]);
-	}
-	else if (sample_freqs->dStereoL[700] > max_amp[700] / 5)
-	{
-		EasterEggLightsEE.BlinkLightLeft = 1;
-		EasterEggLightsEE.BlinkLightLeftPWM = 1000 * (sample_freqs->dStereoL[700] / max_amp[700]);
-		EasterEggLightsEE.BlinkLightRight = 1;
-		EasterEggLightsEE.BlinkLightRightPWM = 1000 * (sample_freqs->dStereoL[700] / max_amp[700]);
-	}
-	else if (sample_freqs->dStereoR[700] > max_amp[700] / 5)
-	{
-		EasterEggLightsEE.BlinkLightLeft = 1;
-		EasterEggLightsEE.BlinkLightLeftPWM = 1000 * (sample_freqs->dStereoR[700] / max_amp[700]);
-		EasterEggLightsEE.BlinkLightRight = 1;
-		EasterEggLightsEE.BlinkLightRightPWM = 1000 * (sample_freqs->dStereoR[700] / max_amp[700]);
+		EasterEggLightsEE.BlinkLightRightPWM = EasterEggLightsEE.BlinkLightLeftPWM;
 	}
 	else
 	{
@@ -338,15 +341,16 @@ void	set_light_variables(tstSampleBufferDouble *sample_freqs, t_light_freqs *fre
 	}
 
 	// brake lights
-	if (sample_freqs->dStereoL[2365] > max_amp[2365] / 5) //556
+	//if (sample_freqs->dStereoL[2365] > max_amp[2365] / 5) //556
+	if (sample_freqs->dStereoL[freqs->Front_Lights] > max_amp[freqs->Front_Lights] / 3)
 	{
 		EasterEggLightsEE.BrakeLights = 1;
-		EasterEggLightsEE.BrakeLightsPWM = 1000 * (sample_freqs->dStereoL[2365] / max_amp[2365]);
+		EasterEggLightsEE.BrakeLightsPWM = 1000 * (sample_freqs->dStereoL[freqs->Front_Lights] / max_amp[freqs->Front_Lights]);
 	}
-	else if (sample_freqs->dStereoR[2365] > max_amp[2365] / 5)
+	else if (sample_freqs->dStereoR[freqs->Front_Lights] > max_amp[freqs->Front_Lights] / 3)
 	{
 		EasterEggLightsEE.BrakeLights = 1;
-		EasterEggLightsEE.BrakeLightsPWM = 1000 * (sample_freqs->dStereoR[2365] / max_amp[2365]);
+		EasterEggLightsEE.BrakeLightsPWM = 1000 * (sample_freqs->dStereoR[freqs->Front_Lights] / max_amp[freqs->Front_Lights]);
 	}
 	else
 	{
