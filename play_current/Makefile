@@ -6,7 +6,7 @@
 #    By: obibby <obibby@student.42wolfsburg.de>     +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/01/06 20:17:58 by libacchu          #+#    #+#              #
-#    Updated: 2023/03/06 09:05:55 by obibby           ###   ########.fr        #
+#    Updated: 2023/03/12 20:55:02 by obibby           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -14,7 +14,7 @@ NAME	=	car_demo
 OBJ_DIR =	obj/
 SRC_DIR =	src/
 SRC		=	main.c EasterEgg.c utils.c PlaySong.c
-INC		=	inc/car.h inc/EasterEgg.h inc/PlaySong.h
+INC		=	inc/car.h inc/EasterEgg.h inc/PlaySong.h *.h
 SYS		=	$(shell uname -s)
 ifeq ($(SYS), Linux)
 	SRC		+=	linux/linux_utils.c linux/lights_main.c linux/lights_fog.c linux/lights_indicator.c linux/lights_interior.c linux/lights_parking.c linux/lights_brake.c linux/lights_license.c linux/lights_reverse.c

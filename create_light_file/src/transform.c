@@ -201,6 +201,27 @@ int	check_average(tstSampleBufferDouble * sample_freqs, double *max_amp, int sta
 	return (0);
 }
 
+int	check_average_couple(tstSampleBufferDouble * sample_freqs, double *max_amp, int one, int two, double *max_avg, double *freq_avg, double sens)
+{
+	*freq_avg = 0;
+	*max_avg = 0;
+	if (sample_freqs->dStereoL[one] > sample_freqs->dStereoR[one])
+		*freq_avg += sample_freqs->dStereoL[one];
+	else
+		*freq_avg += sample_freqs->dStereoR[one];
+	if (sample_freqs->dStereoL[two] > sample_freqs->dStereoR[two])
+		*freq_avg += sample_freqs->dStereoL[two];
+	else
+		*freq_avg += sample_freqs->dStereoR[two];
+	*max_avg += max_amp[one];
+	*max_avg += max_amp[two];
+	*freq_avg = *freq_avg / 2;
+	*max_avg = *max_avg / 2;
+	if (*freq_avg > *max_avg * sens)
+		return (1);
+	return (0);
+}
+
 int	check_average_few(tstSampleBufferDouble * sample_freqs, double *max_amp, int one, int two, int three, double *max_avg, double *freq_avg, double sens)
 {
 	*freq_avg = 0;
@@ -231,10 +252,15 @@ void	set_light_variables(tstSampleBufferDouble *sample_freqs, t_light_freqs *fre
 {
 	double	max_avg;
 	double	freq_avg;
+	static int	count;
 	// headlights
 	//if (check_average(sample_freqs, max_amp, 95, 113, &max_avg, &freq_avg, 0.7)) // start freqs 109-113 + 64-66
 	//if (sample_freqs->dStereoL[120] > max_amp[120] * 0.4 || sample_freqs->dStereoR[120] > max_amp[120] * 0.4) // 120
-	if (check_average_few(sample_freqs, max_amp, 150, 120, 144, &max_avg, &freq_avg, 0.4)) // 75, 81, 82, 106, 261, 440?, 522?, 
+	if (check_average(sample_freqs, max_amp, 1690, 1830, &max_avg, &freq_avg, 0.3)) // 981, 982
+	{
+		EasterEggLightsEE.FrontLights = 1;
+	}
+	else if (check_average_few(sample_freqs, max_amp, 1176, 2338, 4668, &max_avg, &freq_avg, 0.3)) // 965, 987
 	{
 		EasterEggLightsEE.FrontLights = 1;
 	}
@@ -242,16 +268,43 @@ void	set_light_variables(tstSampleBufferDouble *sample_freqs, t_light_freqs *fre
 		EasterEggLightsEE.FrontLights = 0;
 
 	// fog lights
-	if (check_average_few(sample_freqs, max_amp, 112, 222, 130, &max_avg, &freq_avg, 0.4))
+	// if (check_average_few(sample_freqs, max_amp, 3126, 3161, 4203, &max_avg, &freq_avg, 0.5))
+	// {
+	// 	EasterEggLightsEE.FogLights = 1;
+	// 	EasterEggLightsEE.FogLightsPWM = 1000 * (freq_avg / max_avg);
+	// }
+	// if (check_average_few(sample_freqs, max_amp, 261, 330, 660, &max_avg, &freq_avg, 0.3))
+	// {
+	// 	EasterEggLightsEE.FogLights = 1;
+	// 	EasterEggLightsEE.FogLightsPWM = 1000 * (freq_avg / max_avg);
+	// }
+	//TEST
+	if (check_average_few(sample_freqs, max_amp, 261, 330, 660, &max_avg, &freq_avg, 0.3))
 	{
 		EasterEggLightsEE.FogLights = 1;
 		EasterEggLightsEE.FogLightsPWM = 1000 * (freq_avg / max_avg);
 	}
-	else if (check_average_few(sample_freqs, max_amp, 98, 249, 370, &max_avg, &freq_avg, 0.4))
+	else if (check_average_couple(sample_freqs, max_amp, 698, 699, &max_avg, &freq_avg, 0.7))
 	{
 		EasterEggLightsEE.FogLights = 1;
 		EasterEggLightsEE.FogLightsPWM = 1000 * (freq_avg / max_avg);
 	}
+	else if (check_average_few(sample_freqs, max_amp, 246, 395, 590, &max_avg, &freq_avg, 0.3))
+	{
+		EasterEggLightsEE.FogLights = 1;
+		EasterEggLightsEE.FogLightsPWM = 1000 * (freq_avg / max_avg);
+	}
+	//TEST
+	// else if (check_average_couple(sample_freqs, max_amp, 394, 590, &max_avg, &freq_avg, 0.4)) //251
+	// {
+	// 	EasterEggLightsEE.FogLights = 1;
+	// 	EasterEggLightsEE.FogLightsPWM = 1000 * (freq_avg / max_avg);
+	// }
+	// else if (check_average_few(sample_freqs, max_amp, 329, 658, 1322, &max_avg, &freq_avg, 0.4)) //251
+	// {
+	// 	EasterEggLightsEE.FogLights = 1;
+	// 	EasterEggLightsEE.FogLightsPWM = 1000 * (freq_avg / max_avg);
+	// }
 	else
 	{
 		if (EasterEggLightsEE.FogLightsPWM)
@@ -266,52 +319,142 @@ void	set_light_variables(tstSampleBufferDouble *sample_freqs, t_light_freqs *fre
 	}
 
 	// parking lights
-	if (check_average_few(sample_freqs, max_amp, 64, 131, 195, &max_avg, &freq_avg, 0.4))
+	// if (check_average_couple(sample_freqs, max_amp, 81, 224, &max_avg, &freq_avg, 0.4))
+	// {
+	// 	EasterEggLightsEE.ParkingLightLeft = 1;
+	// 	EasterEggLightsEE.ParkingLightLeftPWM = 1000 * (freq_avg / max_avg);
+	// 	EasterEggLightsEE.ParkingLightRight = 1;
+	// 	EasterEggLightsEE.ParkingLightRightPWM = EasterEggLightsEE.ParkingLightLeftPWM;
+	// }
+	// if (check_average_couple(sample_freqs, max_amp, 179, 309, &max_avg, &freq_avg, 0.5)) // 61, 70, 95
+	// {
+	// 	EasterEggLightsEE.ParkingLightLeft = 1;
+	// 	EasterEggLightsEE.ParkingLightLeftPWM = 1000 * (freq_avg / max_avg);
+	// 	EasterEggLightsEE.ParkingLightRight = 1;
+	// 	EasterEggLightsEE.ParkingLightRightPWM = EasterEggLightsEE.ParkingLightLeftPWM;
+	// }
+	if (count > 383)
 	{
-		EasterEggLightsEE.ParkingLightLeft = 1;
-		EasterEggLightsEE.ParkingLightLeftPWM = 1000 * (freq_avg / max_avg);
-		EasterEggLightsEE.ParkingLightRight = 1;
-		EasterEggLightsEE.ParkingLightRightPWM = EasterEggLightsEE.ParkingLightLeftPWM;
-	}
-	else if (check_average_few(sample_freqs, max_amp, 86, 167, 220, &max_avg, &freq_avg, 0.4))
-	{
-		EasterEggLightsEE.ParkingLightLeft = 1;
-		EasterEggLightsEE.ParkingLightLeftPWM = 1000 * (freq_avg / max_avg);
-		EasterEggLightsEE.ParkingLightRight = 1;
-		EasterEggLightsEE.ParkingLightRightPWM = EasterEggLightsEE.ParkingLightLeftPWM;
-	}
-	else
-	{
-		if (EasterEggLightsEE.ParkingLightLeftPWM)
+		if (check_average_few(sample_freqs, max_amp, 71, 71, 71, &max_avg, &freq_avg, 0.4)) // 61, 228, 311
 		{
-			if (EasterEggLightsEE.ParkingLightLeftPWM < 100)
+			EasterEggLightsEE.ParkingLightLeft = 1;
+			EasterEggLightsEE.ParkingLightLeftPWM = 1000;
+			EasterEggLightsEE.ParkingLightRight = 1;
+			EasterEggLightsEE.ParkingLightRightPWM = EasterEggLightsEE.ParkingLightLeftPWM;
+		}
+		else if (check_average_few(sample_freqs, max_amp, 36, 71, 226, &max_avg, &freq_avg, 0.4)) // 61, 228, 311
+		{
+			EasterEggLightsEE.ParkingLightLeft = 1;
+			EasterEggLightsEE.ParkingLightLeftPWM = 1000;
+			EasterEggLightsEE.ParkingLightRight = 1;
+			EasterEggLightsEE.ParkingLightRightPWM = EasterEggLightsEE.ParkingLightLeftPWM;
+		}
+		// else if (check_average_few(sample_freqs, max_amp, 86, 167, 220, &max_avg, &freq_avg, 0.4))
+		// {
+		// 	EasterEggLightsEE.ParkingLightLeft = 1;
+		// 	EasterEggLightsEE.ParkingLightLeftPWM = 1000 * (freq_avg / max_avg);
+		// 	EasterEggLightsEE.ParkingLightRight = 1;
+		// 	EasterEggLightsEE.ParkingLightRightPWM = EasterEggLightsEE.ParkingLightLeftPWM;
+		// }
+		else
+		{
+			if (EasterEggLightsEE.ParkingLightLeftPWM)
 			{
-				EasterEggLightsEE.ParkingLightLeftPWM = 0;
-				EasterEggLightsEE.ParkingLightRightPWM = 0;
+				if (EasterEggLightsEE.ParkingLightLeftPWM < 500)
+				{
+					EasterEggLightsEE.ParkingLightLeftPWM = 0;
+					EasterEggLightsEE.ParkingLightRightPWM = 0;
+				}
+				else
+				{
+					EasterEggLightsEE.ParkingLightLeftPWM -= 500;
+					EasterEggLightsEE.ParkingLightRightPWM -= 500;
+				}
 			}
 			else
 			{
-				EasterEggLightsEE.ParkingLightLeftPWM -= 100;
-				EasterEggLightsEE.ParkingLightRightPWM -= 100;
+				EasterEggLightsEE.ParkingLightLeft = 0;
+				EasterEggLightsEE.ParkingLightRight = 0;			
 			}
+		}
+	}
+	else
+	{
+		if (check_average_few(sample_freqs, max_amp, 86, 167, 220, &max_avg, &freq_avg, 0.4))
+		{
+			EasterEggLightsEE.ParkingLightLeft = 1;
+			EasterEggLightsEE.ParkingLightLeftPWM = 1000 * (freq_avg / max_avg);
+			EasterEggLightsEE.ParkingLightRight = 1;
+			EasterEggLightsEE.ParkingLightRightPWM = EasterEggLightsEE.ParkingLightLeftPWM;
+		}
+		else if (check_average_few(sample_freqs, max_amp, 64, 131, 195, &max_avg, &freq_avg, 0.4))
+		{
+			EasterEggLightsEE.ParkingLightLeft = 1;
+			EasterEggLightsEE.ParkingLightLeftPWM = 1000 * (freq_avg / max_avg);
+			EasterEggLightsEE.ParkingLightRight = 1;
+			EasterEggLightsEE.ParkingLightRightPWM = EasterEggLightsEE.ParkingLightLeftPWM;
 		}
 		else
 		{
-			EasterEggLightsEE.ParkingLightLeft = 0;
-			EasterEggLightsEE.ParkingLightRight = 0;			
+			if (EasterEggLightsEE.ParkingLightLeftPWM)
+			{
+				if (EasterEggLightsEE.ParkingLightLeftPWM < 100)
+				{
+					EasterEggLightsEE.ParkingLightLeftPWM = 0;
+					EasterEggLightsEE.ParkingLightRightPWM = 0;
+				}
+				else
+				{
+					EasterEggLightsEE.ParkingLightLeftPWM -= 100;
+					EasterEggLightsEE.ParkingLightRightPWM -= 100;
+				}
+			}
+			else
+			{
+				EasterEggLightsEE.ParkingLightLeft = 0;
+				EasterEggLightsEE.ParkingLightRight = 0;			
+			}
 		}
 	}
-
 	// blink lights
 	//if (sample_freqs->dStereoL[freqs->Blink_Lights] > max_amp[freqs->Blink_Lights] / 5)
-	if (check_average(sample_freqs, max_amp, 79, 94, &max_avg, &freq_avg, 0.5))
+	if (check_average(sample_freqs, max_amp, 300, 351, &max_avg, &freq_avg, 0.3))
 	{
 		EasterEggLightsEE.BlinkLightLeft = 1;
 		EasterEggLightsEE.BlinkLightLeftPWM = 1000 * (freq_avg / max_avg);
 		EasterEggLightsEE.BlinkLightRight = 1;
 		EasterEggLightsEE.BlinkLightRightPWM = EasterEggLightsEE.BlinkLightLeftPWM;
 	}
-	else if (check_average(sample_freqs, max_amp, 58, 73, &max_avg, &freq_avg, 0.5))
+	//these
+	else if (check_average_couple(sample_freqs, max_amp, 1182, 1182, &max_avg, &freq_avg, 0.4)) //251
+	{
+		EasterEggLightsEE.BlinkLightLeft = 1;
+		EasterEggLightsEE.BlinkLightLeftPWM = 1000 * (freq_avg / max_avg);
+		EasterEggLightsEE.BlinkLightRight = 1;
+		EasterEggLightsEE.BlinkLightRightPWM = EasterEggLightsEE.BlinkLightLeftPWM;
+	}
+	else if (check_average_couple(sample_freqs, max_amp, 588, 1049, &max_avg, &freq_avg, 0.4)) //251
+	{
+		EasterEggLightsEE.BlinkLightLeft = 1;
+		EasterEggLightsEE.BlinkLightLeftPWM = 1000 * (freq_avg / max_avg);
+		EasterEggLightsEE.BlinkLightRight = 1;
+		EasterEggLightsEE.BlinkLightRightPWM = EasterEggLightsEE.BlinkLightLeftPWM;
+	}
+	else if (check_average_couple(sample_freqs, max_amp, 1050, 2105, &max_avg, &freq_avg, 0.4)) //251
+	{
+		EasterEggLightsEE.BlinkLightLeft = 1;
+		EasterEggLightsEE.BlinkLightLeftPWM = 1000 * (freq_avg / max_avg);
+		EasterEggLightsEE.BlinkLightRight = 1;
+		EasterEggLightsEE.BlinkLightRightPWM = EasterEggLightsEE.BlinkLightLeftPWM;
+	}
+	else if (check_average_couple(sample_freqs, max_amp, 989, 989, &max_avg, &freq_avg, 0.5)) //251
+	{
+		EasterEggLightsEE.BlinkLightLeft = 1;
+		EasterEggLightsEE.BlinkLightLeftPWM = 1000 * (freq_avg / max_avg);
+		EasterEggLightsEE.BlinkLightRight = 1;
+		EasterEggLightsEE.BlinkLightRightPWM = EasterEggLightsEE.BlinkLightLeftPWM;
+	}
+	else if (check_average_few(sample_freqs, max_amp, 262, 523, 882, &max_avg, &freq_avg, 0.5)) //251
 	{
 		EasterEggLightsEE.BlinkLightLeft = 1;
 		EasterEggLightsEE.BlinkLightLeftPWM = 1000 * (freq_avg / max_avg);
@@ -341,16 +484,15 @@ void	set_light_variables(tstSampleBufferDouble *sample_freqs, t_light_freqs *fre
 	}
 
 	// brake lights
-	//if (sample_freqs->dStereoL[2365] > max_amp[2365] / 5) //556
-	if (sample_freqs->dStereoL[freqs->Front_Lights] > max_amp[freqs->Front_Lights] / 3)
+	if (check_average_couple(sample_freqs, max_amp, 3119, 3151, &max_avg, &freq_avg, 0.3))
 	{
 		EasterEggLightsEE.BrakeLights = 1;
-		EasterEggLightsEE.BrakeLightsPWM = 1000 * (sample_freqs->dStereoL[freqs->Front_Lights] / max_amp[freqs->Front_Lights]);
+		EasterEggLightsEE.BrakeLightsPWM = 1000 * (freq_avg / max_avg);
 	}
-	else if (sample_freqs->dStereoR[freqs->Front_Lights] > max_amp[freqs->Front_Lights] / 3)
+	else if (check_average_few(sample_freqs, max_amp, 261, 1045, 2099, &max_avg, &freq_avg, 0.4))
 	{
 		EasterEggLightsEE.BrakeLights = 1;
-		EasterEggLightsEE.BrakeLightsPWM = 1000 * (sample_freqs->dStereoR[freqs->Front_Lights] / max_amp[freqs->Front_Lights]);
+		EasterEggLightsEE.BrakeLightsPWM = 1000 * (freq_avg / max_avg);
 	}
 	else
 	{
@@ -366,42 +508,41 @@ void	set_light_variables(tstSampleBufferDouble *sample_freqs, t_light_freqs *fre
 	}
 
 	// ambient lights
-	if (sample_freqs->dStereoL[freqs->Ambient_Lights] > max_amp[freqs->Ambient_Lights] / 5)
+	// else if (check_average_few(sample_freqs, max_amp, 86, 167, 220, &max_avg, &freq_avg, 0.4))
+	// {
+	// 	EasterEggLightsEE.AmbientLights = 1;
+	// 	EasterEggLightsEE.AmbientLightsPWM = 1000 * (freq_avg / max_avg);
+	// }
+	if (check_average_few(sample_freqs, max_amp, 112, 222, 130, &max_avg, &freq_avg, 0.4))
 	{
 		EasterEggLightsEE.AmbientLights = 1;
-		EasterEggLightsEE.AmbientLightsPWM = 1000 * (sample_freqs->dStereoL[freqs->Ambient_Lights] / max_amp[freqs->Ambient_Lights]);
+		EasterEggLightsEE.AmbientLightsPWM = 1000 * (freq_avg / max_avg);
 	}
-	else if (sample_freqs->dStereoR[freqs->Ambient_Lights] > max_amp[freqs->Ambient_Lights] / 5)
+	else if (check_average_few(sample_freqs, max_amp, 98, 249, 370, &max_avg, &freq_avg, 0.4))
 	{
 		EasterEggLightsEE.AmbientLights = 1;
-		EasterEggLightsEE.AmbientLightsPWM = 1000 * (sample_freqs->dStereoR[freqs->Ambient_Lights] / max_amp[freqs->Ambient_Lights]);
+		EasterEggLightsEE.AmbientLightsPWM = 1000 * (freq_avg / max_avg);
+	}
+	// else if (check_average_few(sample_freqs, max_amp, 64, 131, 195, &max_avg, &freq_avg, 0.4))
+	// {
+	// 	EasterEggLightsEE.AmbientLights = 1;
+	// 	EasterEggLightsEE.AmbientLightsPWM = 1000 * (freq_avg / max_avg);
+	// }
+	else if (EasterEggLightsEE.AmbientLightsPWM > 0)
+	{
+		if (EasterEggLightsEE.AmbientLightsPWM < 100)
+			EasterEggLightsEE.AmbientLightsPWM = 0;
+		else
+			EasterEggLightsEE.AmbientLightsPWM -= 100;
 	}
 	else
-	{
-		if (EasterEggLightsEE.AmbientLightsPWM > 0)
-		{
-			if (EasterEggLightsEE.AmbientLightsPWM < 100)
-				EasterEggLightsEE.AmbientLightsPWM = 0;
-			else
-				EasterEggLightsEE.AmbientLightsPWM -= 100;
-		}
-		else
-			EasterEggLightsEE.AmbientLights = 0;
-	}
+		EasterEggLightsEE.AmbientLights = 0;
 	
 	// license lights 1-2
-	if (sample_freqs->dStereoL[freqs->License_Light1] > max_amp[freqs->License_Light1] / 5)
+	if (check_average_few(sample_freqs, max_amp, 261, 330, 660, &max_avg, &freq_avg, 0.3))
 	{
 		EasterEggLightsEE.LicensePlateLight1 = 1;
-		EasterEggLightsEE.LicensePlateLight1PWM = 1000 * (sample_freqs->dStereoL[freqs->License_Light1] / max_amp[freqs->License_Light1]);
-		EasterEggLightsEE.LicensePlateLight2 = 1;
-		EasterEggLightsEE.LicensePlateLight2PWM = EasterEggLightsEE.LicensePlateLight1PWM;
-
-	}
-	else if (sample_freqs->dStereoR[freqs->License_Light1] > max_amp[freqs->License_Light1] / 5)
-	{
-		EasterEggLightsEE.LicensePlateLight1 = 1;
-		EasterEggLightsEE.LicensePlateLight1PWM = 1000 * (sample_freqs->dStereoR[freqs->License_Light1] / max_amp[freqs->License_Light1]);
+		EasterEggLightsEE.LicensePlateLight1PWM = 1000 * (freq_avg / max_avg);
 		EasterEggLightsEE.LicensePlateLight2 = 1;
 		EasterEggLightsEE.LicensePlateLight2PWM = EasterEggLightsEE.LicensePlateLight1PWM;
 	}
@@ -428,18 +569,10 @@ void	set_light_variables(tstSampleBufferDouble *sample_freqs, t_light_freqs *fre
 	}
 
 	// license lights 3-4
-	if (sample_freqs->dStereoL[freqs->License_Light3] > max_amp[freqs->License_Light3] / 5)
+	if (check_average_few(sample_freqs, max_amp, 246, 395, 590, &max_avg, &freq_avg, 0.3))
 	{
 		EasterEggLightsEE.LicensePlateLight3 = 1;
-		EasterEggLightsEE.LicensePlateLight3PWM = 1000 * (sample_freqs->dStereoL[freqs->License_Light3] / max_amp[freqs->License_Light3]);
-		EasterEggLightsEE.LicensePlateLight4 = 1;
-		EasterEggLightsEE.LicensePlateLight4PWM = EasterEggLightsEE.LicensePlateLight3PWM;
-
-	}
-	else if (sample_freqs->dStereoR[freqs->License_Light3] > max_amp[freqs->License_Light3] / 5)
-	{
-		EasterEggLightsEE.LicensePlateLight3 = 1;
-		EasterEggLightsEE.LicensePlateLight3PWM = 1000 * (sample_freqs->dStereoR[freqs->License_Light3] / max_amp[freqs->License_Light3]);
+		EasterEggLightsEE.LicensePlateLight3PWM = 1000 * (freq_avg / max_avg);
 		EasterEggLightsEE.LicensePlateLight4 = 1;
 		EasterEggLightsEE.LicensePlateLight4PWM = EasterEggLightsEE.LicensePlateLight3PWM;
 	}
@@ -488,6 +621,7 @@ void	set_light_variables(tstSampleBufferDouble *sample_freqs, t_light_freqs *fre
 		else
 			EasterEggLightsEE.ReverseLights = 0;
 	}
+	count++;
 }
 
 void	*transform_loop(void *info_void)

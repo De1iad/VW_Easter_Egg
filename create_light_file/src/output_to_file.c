@@ -6,7 +6,7 @@
 /*   By: obibby <obibby@student.42wolfsburg.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/01 14:02:43 by obibby            #+#    #+#             */
-/*   Updated: 2023/03/07 09:01:29 by obibby           ###   ########.fr       */
+/*   Updated: 2023/03/11 17:17:47 by obibby           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,15 +88,15 @@ void	output_to_file(int16_t code, t_info *info)
 	}
 	if (!init)
 	{
-		info->ambientlights = fopen("ambientlights.h", "w+");
-		info->blinklights = fopen("blinklights.h", "w+");
-		info->brakelights = fopen("brakelights.h", "w+");
-		info->foglights = fopen("foglights.h", "w+");
-		info->frontlights = fopen("frontlights.h", "w+");
-		info->licenseplate12 = fopen("license12.h", "w+");
-		info->licenseplate34 = fopen("license34.h", "w+");
-		info->parkinglights = fopen("parkinglights.h", "w+");
-		info->reverselights = fopen("reverselights.h", "w+");
+		info->ambientlights = fopen("../play_current/ambientlights.h", "w+");
+		info->blinklights = fopen("../play_current/blinklights.h", "w+");
+		info->brakelights = fopen("../play_current/brakelights.h", "w+");
+		info->foglights = fopen("../play_current/foglights.h", "w+");
+		info->frontlights = fopen("../play_current/frontlights.h", "w+");
+		info->licenseplate12 = fopen("../play_current/license12.h", "w+");
+		info->licenseplate34 = fopen("../play_current/license34.h", "w+");
+		info->parkinglights = fopen("../play_current/parkinglights.h", "w+");
+		info->reverselights = fopen("../play_current/reverselights.h", "w+");
 		put_headers_to_file(info);
 		put_hex(info->ambientlights, EasterEggLightsEE.AmbientLightsPWM);
 		put_hex(info->blinklights, EasterEggLightsEE.BlinkLightLeftPWM);
