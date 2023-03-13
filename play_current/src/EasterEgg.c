@@ -6,7 +6,7 @@
 /*   By: obibby <obibby@student.42wolfsburg.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/01 18:45:42 by obibby            #+#    #+#             */
-/*   Updated: 2023/03/04 11:26:03 by obibby           ###   ########.fr       */
+/*   Updated: 2023/03/13 10:49:09 by obibby           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,7 @@ void	*set_lights(void *time_void)
 	char	buff[3];
 	int	i;
 
-	while (current - *previous_time < 11000)
+	while (current - *previous_time < 10800)
 	{
 		current = get_time_in_ms();
 	}
