@@ -40,8 +40,7 @@ int	light_loop(t_car *car)
 {
 	car->current_time = get_time_in_ms();
 	if (car->current_time - car->previous_time >= 10)
-	{	
-		//EasterEgg_Cyclic_10ms();
+	{
 		brake_lights(car);
 		indicators(car);
 		main_lights(car);
